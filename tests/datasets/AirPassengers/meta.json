@@ -1,0 +1,15 @@
+{
+  "target_column_name": "#Passengers",
+  "features": {
+    "date": "timestamp",
+    "#Passengers": "double"
+  },
+  "date_column_name": "date",
+  "derivation_window": 60,
+  "forecast_horizon": 15,
+  "gap": 0,
+  "time_unit": "month",
+  "groupby": "standard",
+  "folds": 5,
+  "validation_percentage": 0
+}

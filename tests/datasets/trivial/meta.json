@@ -1,0 +1,18 @@
+{
+  "target_column_name": "y",
+  "features": {
+    "x": "double",
+    "y": "double",
+    "s1": "string",
+    "s2": "string",
+    "dates": "timestamp"
+  },
+  "validation_percentage": 0,
+  "folds": 5,
+  "derivation_window": 60,
+  "forecast_horizon": 5,
+  "gap": 0,
+  "date_column_name": "dates",
+  "time_unit": "day",
+  "groupby": "standard"
+}

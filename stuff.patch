@@ -1,0 +1,61 @@
+diff --git a/Dockerfile b/Dockerfile
+index 699e27c..4ddd909 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -17,6 +17,10 @@ RUN apt update; apt install gcc -y
+ WORKDIR /code
+ COPY poetry.lock pyproject.toml /code/
+ 
++# Copy the files we need when the image is exported
++COPY exodus_model_template /code/exodus_model_template
++COPY README.md LICENSE /code/
++
+ # Project initialization:
+ RUN poetry config virtualenvs.create false \
+   && poetry install --no-dev --no-interaction --no-ansi
+diff --git a/pyproject.toml b/pyproject.toml
+index a96cfe8..a749c5b 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -48,6 +48,7 @@ SRC = "exodus_model_template"
+ DIFF.default = ""
+ INPLACE.default = "--in-place"
+ PYTHONDONTWRITEBYTECODE = "duh"
++HARBOR = "harbor.mobagel.com/exodus"
+ 
+ [tool.poe.tasks]
+ 
+@@ -127,9 +128,11 @@ sequence = ["clean", "_package"]
+ args = [{ name = "name", help = "File name for the ZIP file", required = true }]
+ 
+ [tool.poe.tasks.save]
+-help = "Builds this model algorithm into a Docker image"
++help = "Builds this model algorithm into a Docker image, then push to harbor"
+ shell = """
+   VERSION=$(poetry version --short); \
+   docker build -t exodus_model_template:$VERSION .; \
+-  docker save -o exodus_model_template.tar exodus_model_template:$VERSION
++  docker save -o exodus_model_template.tar exodus_model_template:$VERSION; \
++  docker tag exodus_model_template:$VERSION $HARBOR/exodus_model_template:$VERSION; \
++  docker push $HARBOR/exodus_model_template:$VERSION
+ """
+diff --git a/scripts/rename.py b/scripts/rename.py
+index 86bd7ba..62e3bef 100644
+--- a/scripts/rename.py
++++ b/scripts/rename.py
+@@ -25,6 +25,14 @@ if __name__ == "__main__":
+             for fname in files:
+                 fpath = os.path.join(dname, fname)
+                 replace_strings_in_file(fpath, old, replacement)
+-    for target in ["./pyproject.toml", "./docker-compose.yml", "./scripts/stop.py", "./scripts/watch.py", "./DEVELOP.md"]:
++    targets = [
++        "./pyproject.toml",
++        "./docker-compose.yml",
++        "./Dockerfile",
++        "./scripts/stop.py",
++        "./scripts/watch.py",
++        "./DEVELOP.md"
++    ]
++    for target in targets:
+         replace_strings_in_file(target, old, replacement)
+     os.rename(old, replacement)

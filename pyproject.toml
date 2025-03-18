@@ -1,0 +1,145 @@
+[tool.poetry]
+name = "lstm"
+version = "1.17.0"
+description = "The template for generating Exodus models."
+authors = ["andylii <andylii@mobagel.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+include = [
+  "LICENSE.txt",
+  "README.md"
+]
+
+[tool.poetry.dependencies]
+python = "<3.10,^3.8"
+uvicorn = "0.17.6"
+gunicorn = "20.1.0"
+pymongo = {extras = ["encryption"], version = "4.3.3"}
+psutil = "5.9.4"
+isort = "5.12.0"
+toml = "0.10.2"
+python-multipart = "0.0.5"
+python-levenshtein = "0.21.0"
+certifi = "2021.10.8"
+tensorflow = "2.7.0"
+scikit-learn = "0.24.2"
+pandas = "1.4.0"
+Cython = "3.0.0a11"
+numpy = "1.21.0"
+click = "8.0.4"
+grpcio-tools = "1.53.0"
+prefect = "2.10.7"
+s3fs = "2023.6.0"
+testcontainers = "3.7.1"
+testcontainers-minio = "0.0.1rc1"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+neovim = "^0.3.1"
+mypy = "^1.5.1"
+poethepoet = "^0.12.2"
+bpython = "^0.22.1"
+watchdog = "^2.1.6"
+docker = "^5.0.3"
+coveralls = "^3.3.1"
+pytest-cov = "^3.0.0"
+argparse = "^1.4.0"
+git-archive-all = "^1.23.0"
+Jinja2 = "^3.1.2"
+bump2version = "^1.0.1"
+pytest-asyncio = "^0.21.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.4"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.env]
+
+SRC = "src"
+DIFF.default = ""
+INPLACE.default = "--in-place"
+PYTHONDONTWRITEBYTECODE = "duh"
+HARBOR = "harbor.mobagel.com/exodus-v2"
+
+[tool.poe.tasks]
+
+_mypy = 'mypy -p $SRC --non-interactive'
+_isort = 'isort $SRC $DIFF --color'
+_black = 'black $SRC $DIFF --color'
+_format = ["_isort","_black"]
+_checkout.shell = "git checkout master; git pull"
+
+[tool.poe.tasks._bump]
+cmd = "bump2version --new-version $version bogus-part"
+args = [{name = "version", positional = true}]
+
+[tool.poe.tasks._save]
+shell = "./scripts/save-image.sh $build_type $HARBOR"
+args = [{name = "build_type", positional = true}]
+
+[tool.poe.tasks.format]
+help = "Formats the `lstm` directory in-place"
+ref = "_format"
+
+[tool.poe.tasks.lint]
+help = "Lints the `lstm` directory"
+sequence = ["_mypy", "_black"]
+env = { DIFF = "--diff", INPLACE = "" }
+
+[tool.poe.tasks.test]
+help = "Runs the test"
+shell = """
+  pytest --cov=$SRC --cov-report term-missing --asyncio-mode=auto tests/ &&
+  poe clean
+"""
+env = { PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION = 'python' }
+
+[tool.poe.tasks.clean]
+help = "Removes generated files"
+cmd  = """
+  rm -rf .coverage*
+         .mypy_cache
+         .pytest_cache
+         ./**/__pycache__
+         dist
+         htmlcov
+"""
+
+[tool.poe.tasks.save]
+help = "Builds this model algorithm into a Docker image, then push to harbor"
+shell = "echo; echo; echo =========; echo 'Image is successsfully saved, build type = '$build_type"
+deps = ["_save $build_type"]
+args = [{name = "build_type", help = "Build type for the image. Available options are `debug` (things are not cythonized, you probably want this), `nightly` and `release`.", positional = true, required = true}]
+
+[tool.poe.tasks.update_exodus_common]
+help = "Updates exodus common to the latest commit on master branch"
+cmd = "git submodule update --remote --merge"
+
+[tool.poe.tasks.release]
+help = "Releases a new version."
+shell = "git push --tag; git push; echo; echo; echo =========; echo 'Successfully updated the repo to '${version}'!'"
+deps = ["_checkout", "clean", "_bump $version"]
+args = [{name = "version", help = "The new version to bump to.", positional = true, required = true}]
+
+[tool.mypy]
+exclude = [
+  'src/external/grpc/',
+  'exodus_common/'
+]
+ignore_missing_imports = true
+install_types = true
+
+[[tool.mypy.overrides]]
+module = [
+  'src/external/grpc/*',
+  'exodus_common/*'
+]
+ignore_errors = true
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+]

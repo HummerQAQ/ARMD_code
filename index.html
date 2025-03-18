@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
+  <script>
+    var colCount = 0;
+    function createElementFromHTML(htmlString) {
+      var div = document.createElement("div");
+      div.innerHTML = htmlString.trim();
+      return div.firstChild;
+    }
+    function addColumn() {
+      var html = document
+        .getElementById("column_template")
+        .innerHTML.replace(/X/g, colCount++);
+      document
+        .getElementById("column_list")
+        .appendChild(createElementFromHTML(html));
+    }
+    async function handleTrain() {
+      const training_data = await document.querySelector("#train_data")
+        .files[0].text();
+      var holdout_data = null;
+      const maybe_holdout = document.querySelector("#holdout_data").files;
+      if (maybe_holdout) {
+        holdout_data = await maybe_holdout[0].text();
+      }
+
+      const target_column_name = document.getElementById("target_column").value;
+      const feature_types_container =
+        document.querySelectorAll(".feature_types");
+      let feature_types = [];
+      let target_column_type = null;
+      for (let i = 0; i < feature_types_container.length; i++) {
+        const item = feature_types_container[i];
+        const label = item.querySelector("input").value;
+        const select = item.querySelector("select").value;
+        if (label && select) {
+          if (label == target_column_name) {
+            target_column_type = select;
+          }
+          feature_types.push(Object({ name: label, data_type: select }));
+        }
+      }
+      const folds = document.getElementById("folds");
+      const validation_percentage = document.getElementById(
+        "validation_percentage"
+      );
+      const target = Object({
+        name: target_column_name,
+        data_type: target_column_type,
+      });
+      const body = {
+        training_data: training_data,
+        target,
+        feature_types,
+        folds: folds.valueAsNumber,
+        validation_percentage: validation_percentage.valueAsNumber,
+        holdout_data: holdout_data,
+      };
+      const response = await fetch("/train_iid", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      console.log(response.model_id);
+    }
+  </script>
+  <div id="column_template" hidden>
+    <fieldset class="feature_types" id="column_X">
+      <legend>Column X</legend>
+      <label for="col_name_X">Name</label>
+      <input id="col_name_X" type="text" name="col_name_X" />
+      <label for="data_type_X">Data Type</label>
+      <select id="data_type_X" name="data_type_X">
+        <option value="string">string</option>
+        <option value="double">double</option>
+        <option value="timestamp">timestamp</option>
+      </select>
+    </fieldset>
+  </div>
+  <body>
+    <h1>Training</h1>
+    <div>
+      <p>
+        Training Data
+        <input id="train_data" type="file" name="train_data" multiple />
+      </p>
+      <p>
+        Target Column
+        <input id="target_column" type="text" name="target_column" multiple />
+      </p>
+      <div id="column_list"></div>
+      <button type="button" onclick="addColumn()">Add Column</button>
+      <p>
+        Folds
+        <input
+          id="folds"
+          type="number"
+          name="folds"
+          value="5"
+          min="2"
+          max="10"
+        />
+      </p>
+      <p>
+        Validation Percentage
+        <input
+          id="validation_percentage"
+          type="number"
+          name="validation_percentage"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.1"
+        />
+      </p>
+      <p>
+        Holdout Data
+        <input id="holdout_data" type="file" name="holdout_data" />
+      </p>
+      <input type="submit" value="Go!" onclick="handleTrain()" />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+{
+    "target_column_name": "amt",
+    "features": {
+      "month": "timestamp",
+      "amt": "double",
+      "TG_Num": "double",
+      "TG_Cat": "string"
+    },
+    "date_column_name": "month",
+    "derivation_window": 3,
+    "forecast_horizon": 1,
+    "gap": 1,
+    "time_unit": "month",
+    "groupby": "standard",
+    "folds": 3,
+    "validation_percentage": 0,
+    "time_groups": ["TG_Num", "TG_Cat"]
+  }

@@ -1,0 +1,11 @@
+price_type,date,Total number of applicants,Total number of license issued
+avg price,2019-02-01,168941.0,7420.0
+avg price,2019-03-01,1442.0,19850.0
+avg price,2019-04-01,34952.0,199250.0
+avg price,2019-05-01,5442.0,34250.0
+avg price,2019-06-01,9456442.0,1250.0
+lowest price,2019-02-01,168941.0,7420.0
+lowest price,2019-03-01,1442.0,19850.0
+lowest price,2019-04-01,349652.0,199250.0
+lowest price,2019-05-01,5442.0,34992.0
+lowest price,2019-06-01,9456442.0,1250.0

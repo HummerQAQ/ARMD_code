@@ -1,0 +1,40 @@
+{
+  "target_column_name": "現金",
+  "features": {
+    "資料日期": "timestamp",
+    "現金": "double",
+    "幣別": "string",
+    "匯率計算方式": "string",
+    "即期": "double",
+    "遠期10天": "double",
+    "遠期30天": "double",
+    "遠期60天": "double",
+    "遠期90天": "double",
+    "遠期120天": "double",
+    "遠期150天": "double",
+    "遠期180天": "double"
+  },
+  "date_column_name": "資料日期",
+  "derivation_window": 60,
+  "forecast_horizon": 1,
+  "gap": 0,
+  "time_unit": "day",
+  "groupby": "standard",
+  "folds": 2,
+  "validation_percentage": 0,
+  "time_groups": [
+    "幣別",
+    "匯率計算方式"
+  ],
+  "endo_features": [
+    "即期",
+    "遠期10天",
+    "遠期30天",
+    "遠期60天",
+    "遠期90天",
+    "遠期120天",
+    "遠期150天",
+    "遠期180天"
+  ],
+  "exo_features": []
+}

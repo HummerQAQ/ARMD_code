@@ -1,0 +1,16 @@
+{
+    "target_column_name": "regression",
+    "features": {
+      "date": "timestamp",
+      "regression": "double"
+    },
+    "date_column_name": "date",
+    "derivation_window": 12,
+    "forecast_horizon": 3,
+    "gap": 0,
+    "time_unit": "day",
+    "groupby": "standard",
+    "folds": 2,
+    "validation_percentage": 0,
+    "time_groups": []
+  }

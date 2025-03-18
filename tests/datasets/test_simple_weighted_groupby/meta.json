@@ -1,0 +1,28 @@
+{
+    "target_column_name": "#Passengers",
+    "features": {
+        "Month": "timestamp",
+        "#Passengers": "double",
+        "TG_1": "string",
+        "TG_2": "string",
+        "weight": "double",
+        "volume": "double"
+    },
+    "date_column_name": "Month",
+    "derivation_window": 12,
+    "forecast_horizon": 3,
+    "gap": 0,
+    "time_unit": "month",
+    "groupby": "weightedgroupby",
+    "folds": 2,
+    "validation_percentage": 0,
+    "time_groups": [
+        "TG_1",
+        "TG_2"
+    ],
+    "endo_features": [],
+    "exo_features": [
+        "weight",
+        "volume"
+    ]
+}

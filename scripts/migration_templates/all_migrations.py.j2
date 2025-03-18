@@ -1,0 +1,14 @@
+# type: ignore
+{% if scripts %}
+from . import (
+{% for script in scripts %}
+    {{script}},
+{% endfor %}
+)
+{% endif %}
+
+all_migrations = [
+{% for script in scripts %}
+    {{script}}.Migration(),
+{% endfor %}
+]

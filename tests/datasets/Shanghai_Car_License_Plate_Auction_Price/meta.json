@@ -1,0 +1,21 @@
+{
+  "target_column_name": "price",
+  "features": {
+    "price_type": "string",
+    "date": "timestamp",
+    "price": "double",
+    "Total number of applicants": "double",
+    "Total number of license issued": "double"
+  },
+  "date_column_name": "date",
+  "folds": 5,
+  "derivation_window": 60,
+  "validation_percentage": 0,
+  "forecast_horizon": 5,
+  "gap": 0,
+  "time_unit": "month",
+  "groupby": "standard",
+  "time_groups": [
+    "price_type"
+  ]
+}

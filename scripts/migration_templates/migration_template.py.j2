@@ -1,0 +1,13 @@
+from exodusutils.migration.base_migration import BaseMigration, Collection
+
+class Migration(BaseMigration):
+    def __init__(self, timestamp: int = {{timestamp}}, name: str = "{{name}}") -> None:
+        super().__init__(timestamp, name)
+
+    def up(self, collection: Collection) -> None:
+        # TODO implement this method
+        pass
+
+    def down(self, collection: Collection) -> None:
+        # TODO implement this method
+        pass

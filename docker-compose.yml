@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  minio:
+    restart: always
+    image: harbor.mobagel.com/core-tech-ci/minio:latest
+    command: minio server /data --console-address :9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+        reservations:
+          memory: 4g
+    volumes:
+      - minio:/data
+
+  mongo:
+    restart: always
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    ports:
+      - "27017:27017"
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+        reservations:
+          memory: 4g
+    volumes:
+      - mongodb:/data/db
+
+volumes:
+  minio:
+  mongodb:

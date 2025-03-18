@@ -1,0 +1,19 @@
+{
+  "target_column_name": "#Passengers",
+  "features": {
+    "Month": "timestamp",
+    "#Passengers": "double",
+    "TG_1": "string"
+  },
+  "date_column_name": "Month",
+  "derivation_window": 12,
+  "forecast_horizon": 6,
+  "gap": 0,
+  "time_unit": "month",
+  "groupby": "standard",
+  "folds": 3,
+  "validation_percentage": 0,
+  "time_groups": [
+    "TG_1"
+  ]
+}
